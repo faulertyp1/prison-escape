@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prison Escape – Test 8 Pixelart</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- wrap enthält das Spiel und alle Menüs, damit der Vollbildmodus alles zeigt -->
+  <div id="wrap">
+    <canvas id="game" width="960" height="544"></canvas>
+
+    <!-- Anzeige im Spiel -->
+    <div id="hud" class="hidden"><span id="hudLevel"></span><span id="hudKey"></span></div>
+    <div id="toast" class="hidden"></div>
+
+    <!-- Hauptmenü -->
+    <section id="menu" class="screen">
+      <div class="glass">
+        <h1>Prison Escape</h1>
+        <p class="sub">Ein Goblin. Ein falsches Urteil. Eine Zelle.</p>
+        <button data-action="continue" id="btnContinue">Fortsetzen</button>
+        <button data-action="play">Spielen</button>
+        <button data-action="options">Optionen</button>
+        <button data-action="quit">Verlassen</button>
+      </div>
+    </section>
+
+    <section id="intro" class="screen intro-screen hidden" aria-live="polite">
+      <div class="intro-panel">
+        <div id="introProgress" class="intro-progress"></div>
+        <h2 id="introTitle"></h2>
+        <p id="introText"></p>
+        <div class="intro-actions">
+          <button data-action="introNext" id="introNext">Weiter</button>
+          <button data-action="introSkip">Überspringen (Esc)</button>
+        </div>
+        <p class="intro-help">Die Szenen wechseln von selbst. Drücke Enter oder „Weiter“ für die nächste Szene.</p>
+      </div>
+    </section>
+
+    <!-- Optionen -->
+    <section id="options" class="screen hidden">
+      <div class="glass">
+        <h2>Optionen</h2>
+        <label>Lautstärke <input type="range" id="optVolume" min="0" max="100"></label>
+        <label class="row"><input type="checkbox" id="optMusic"> Musik</label>
+        <label class="row"><input type="checkbox" id="optSfx"> Soundeffekte</label>
+        <label>Fenstergröße
+          <select id="optSize">
+            <option value="auto">Automatisch</option>
+            <option value="720">Klein (720 px)</option>
+            <option value="960">Mittel (960 px)</option>
+            <option value="1280">Groß (1280 px)</option>
+          </select>
+        </label>
+        <button data-action="fullscreen">Vollbild ein/aus</button>
+        <button data-action="optionsBack">Zurück</button>
+      </div>
+    </section>
+
+    <!-- Pause -->
+    <section id="pause" class="screen hidden">
+      <div class="glass">
+        <h2>Pause</h2>
+        <button data-action="resume">Weiter</button>
+        <button data-action="restart">Level neu starten</button>
+        <button data-action="options">Optionen</button>
+        <button data-action="toMenu">Hauptmenü</button>
+      </div>
+    </section>
+
+    <!-- Level geschafft / Ende -->
+    <section id="win" class="screen hidden">
+      <div class="glass">
+        <h2 id="winTitle"></h2>
+        <p id="winText"></p>
+        <button data-action="next" id="btnNext">Nächstes Level</button>
+        <button data-action="toMenu">Hauptmenü</button>
+      </div>
+    </section>
+  </div>
+  <script src="game.js"></script>
+</body>
+</html>

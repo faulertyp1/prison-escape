@@ -1,0 +1,189 @@
+/* Pixelpalette: Nachtblau, Stein, Goblingruen und Fackelgold */
+:root {
+  --bg: #0d0f14;
+  --torch: #ffb04a;
+  --goblin: #7bd36b;
+  --glass: rgba(24, 28, 38, 0.55);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background-color: var(--bg);
+  background-image: linear-gradient(rgba(60, 75, 100, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(60, 75, 100, 0.08) 1px, transparent 1px);
+  background-size: 16px 16px;
+  color: #eef1f6;
+  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+}
+
+/* Spielfenster: die Breite wird per JavaScript gesetzt (Option "Fenstergröße") */
+#wrap {
+  position: relative;
+  width: min(100vw, 176vh);
+  aspect-ratio: 960 / 544;
+  overflow: hidden;
+  border-radius: 14px;
+  box-shadow: 0 0 60px rgba(255, 176, 74, 0.12), 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+/* Im Vollbild füllt das Spiel den ganzen Bildschirm, das Bild bleibt proportional */
+#wrap:fullscreen { width: 100vw !important; height: 100vh; aspect-ratio: auto; background: #000; border-radius: 0; }
+#wrap:fullscreen canvas { object-fit: contain; }
+
+canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  background: #171b26;
+}
+
+.hidden { display: none !important; }
+
+/* Menü-Bildschirme liegen über dem Spiel; es ist immer nur einer sichtbar.
+   Der Hintergrund ist halbtransparent, damit man die Zelle mit Goblin und Wache sieht. */
+.screen {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 50% 30%, rgba(255, 176, 74, 0.10), rgba(5, 6, 9, 0.55));
+}
+
+.intro-screen { background: linear-gradient(180deg, transparent 38%, rgba(5, 8, 15, 0.18) 56%, rgba(5, 8, 15, 0.9) 100%); }
+.intro-panel {
+  position: absolute;
+  left: 50%;
+  top: 14px;
+  transform: translateX(-50%);
+  width: min(92%, 660px);
+  padding: 12px 18px;
+  text-align: center;
+  background: rgba(15, 21, 33, 0.94);
+  border: 2px solid #53627a;
+  box-shadow: 0 6px 0 #090e18, 0 0 0 3px rgba(13, 19, 30, 0.8);
+}
+.intro-progress { margin-bottom: 6px; color: #b6c4dc; font-size: 0.8rem; letter-spacing: 1px; }
+.intro-panel h2 { margin-bottom: 6px; color: #f0cb70; }
+.intro-panel #introText { min-height: 2em; margin: 0 auto 8px; color: #e0e5ef; line-height: 1.4; }
+.intro-actions { display: flex; justify-content: center; gap: 10px; }
+.intro-help { margin: 7px 0 0; color: #99a6ba; font-size: 0.75rem; }
+
+.glass {
+  width: min(86%, 360px);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: linear-gradient(160deg, rgba(40, 46, 62, 0.6), rgba(18, 21, 30, 0.6));
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  animation: rise 0.45s ease-out;
+}
+.glass.wide { width: min(90%, 560px); }
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(18px) scale(0.97); }
+  to   { opacity: 1; transform: none; }
+}
+
+h1, h2 { margin: 0; letter-spacing: 1px; text-shadow: 0 0 18px rgba(255, 176, 74, 0.5); }
+/* Titel mit wanderndem Fackel-Glanz */
+h1 {
+  font-size: 2.2rem;
+  text-align: center;
+  background: linear-gradient(90deg, #ff9a2e, #fff0b0, #ff9a2e);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: none;
+  filter: drop-shadow(0 0 14px rgba(255, 176, 74, 0.45));
+  animation: shimmer 5s linear infinite;
+}
+@keyframes shimmer { to { background-position: -200% 0; } }
+h2 { color: var(--torch); }
+.sub, #courtText, #winText { margin: 0 0 6px; color: #b9c0cf; line-height: 1.5; text-align: center; }
+#courtText, #winText { text-align: left; }
+
+button, select {
+  font: inherit;
+  padding: 12px 16px;
+  color: #eef1f6;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.15s, background 0.2s, box-shadow 0.2s;
+}
+/* Die wichtigsten Knöpfe sind orange hervorgehoben */
+button[data-action="play"], button[data-action="continue"], button[data-action="next"],
+button[data-action="courtNext"], button[data-action="resume"] {
+  background: linear-gradient(180deg, rgba(255, 176, 74, 0.38), rgba(255, 130, 40, 0.22));
+  border-color: rgba(255, 176, 74, 0.55);
+  font-weight: bold;
+}
+button:hover, select:hover {
+  background: rgba(255, 176, 74, 0.28);
+  box-shadow: 0 0 16px rgba(255, 176, 74, 0.35);
+  transform: translateY(-2px);
+}
+button:active { transform: translateY(0) scale(0.98); }
+button:focus-visible, select:focus-visible { outline: 2px solid var(--goblin); }
+button:disabled { opacity: 0.35; pointer-events: none; }
+
+label { display: flex; flex-direction: column; gap: 6px; color: #b9c0cf; }
+label.row { flex-direction: row; align-items: center; gap: 10px; }
+input[type="range"] { accent-color: var(--torch); }
+input[type="checkbox"] { accent-color: var(--goblin); width: 18px; height: 18px; }
+select option { background: #1a1e29; }
+
+/* Anzeige im Spiel: kleine Glas-Kapseln */
+#hud {
+  position: absolute;
+  top: 10px; left: 12px; right: 12px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  text-shadow: 0 2px 4px #000;
+  pointer-events: none;
+}
+#hud span:not(:empty) {
+  padding: 5px 14px;
+  background: var(--glass);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  font-size: 0.9rem;
+}
+#hudKey { color: #ffd34a; }
+#toast {
+  position: absolute;
+  bottom: 18px; left: 50%;
+  transform: translateX(-50%);
+  max-width: 90%;
+  text-align: center;
+  padding: 8px 16px;
+  background: var(--glass);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glass { animation: none; }
+  h1 { animation: none; }
+  button:hover { transform: none; }
+  .intro-panel * { scroll-behavior: auto; }
+}
